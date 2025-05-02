@@ -1,0 +1,5 @@
+# Formatage
+pnpm format
+
+# Tests unitaires
+pnpm test
