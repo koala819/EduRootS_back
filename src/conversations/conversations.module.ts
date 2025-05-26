@@ -4,6 +4,7 @@ import { Conversation, ConversationSchema } from './conversations.schema'
 import { ConversationsService } from './conversations.service'
 import { ConversationsController } from './conversations.controller'
 import { ChatMessage, ChatMessageSchema } from './chatmessage.schema'
+import { ConversationsGateway } from './conversations.gateway'
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { ChatMessage, ChatMessageSchema } from './chatmessage.schema'
       { name: ChatMessage.name, schema: ChatMessageSchema },
     ]),
   ],
-  providers: [ConversationsService],
+  providers: [ConversationsService, ConversationsGateway],
   controllers: [ConversationsController],
   exports: [ConversationsService],
 })
