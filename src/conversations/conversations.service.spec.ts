@@ -54,7 +54,7 @@ describe('ConversationsService', () => {
     expect(result).toHaveProperty('_id', validObjectId)
   })
 
-  it("devrait retourner les messages d'une conversation", async () => {
+  it('devrait retourner les messages d\'une conversation', async () => {
     const execMock = jest.fn().mockResolvedValue([{ content: 'msg1' }, { content: 'msg2' }])
     chatMessageModel.find = jest.fn().mockReturnThis()
     chatMessageModel.sort = jest.fn().mockReturnThis()

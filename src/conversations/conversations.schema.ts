@@ -6,13 +6,13 @@ export type ConversationDocument = Conversation & Document
 @Schema({ timestamps: true })
 export class Conversation {
   @Prop({ type: String, enum: ['private', 'group'], required: true })
-  type: 'private' | 'group'
+    type: 'private' | 'group'
 
   @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
-  members: Types.ObjectId[]
+    members: Types.ObjectId[]
 
   @Prop()
-  name?: string
+    name?: string
 }
 
 export const ConversationSchema = SchemaFactory.createForClass(Conversation)

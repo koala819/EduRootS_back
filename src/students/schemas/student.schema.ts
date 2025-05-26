@@ -44,7 +44,8 @@ const studentStatsSchema = new Schema(
 
 studentStatsSchema.index({ lastUpdate: -1 })
 studentStatsSchema.index({ userId: 1 }, { unique: true })
-studentStatsSchema.index({ absencesCount: 1 }) // Index pour faciliter les requêtes sur le nombre d'absences
+// Index pour faciliter les requêtes sur le nombre d'absences
+studentStatsSchema.index({ absencesCount: 1 })
 
 // Création du modèle
 const modelName = 'StudentStats'
