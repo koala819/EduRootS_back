@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Body, Param, Req, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Req,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common'
 import { ConversationsService } from './conversations.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { Types } from 'mongoose'
@@ -10,6 +19,10 @@ export class ConversationsController {
 
   @Post()
   async create(@Body() body: { type: 'private' | 'group'; members: string[]; name?: string }) {
+    if (!body.members || !Array.isArray(body.members)) {
+      throw new BadRequestException('Le champ "members" est requis et doit être un tableau')
+    }
+
     const members = body.members.map((id) => new Types.ObjectId(id))
     return this.conversationsService.create(body.type, members, body.name)
   }
@@ -26,6 +39,10 @@ export class ConversationsController {
 
   @Post(':id/messages')
   async sendMessage(@Param('id') id: string, @Req() req, @Body() body: { content: string }) {
+    if (!body.content) {
+      throw new BadRequestException('Le champ "content" est requis')
+    }
+
     return this.conversationsService.createChatMessage(id, req.user._id, body.content)
   }
 
