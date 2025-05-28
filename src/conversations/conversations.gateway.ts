@@ -69,24 +69,24 @@ export class ConversationsGateway implements OnGatewayConnection, OnGatewayDisco
     this.logger.log(`Client déconnecté: ${client.id}`)
   }
 
-  @SubscribeMessage('joinConversation')
-  async joinConversation(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { conversationId: string },
-  ) {
-    try {
-      const userId = client.data.userId
-      await this.conversationsService.joinConversation(
-        data.conversationId,
-        new Types.ObjectId(userId),
-      )
-      client.join(`conversation-${data.conversationId}`)
-      return { success: true }
-    } catch (error) {
-      this.logger.error(`Erreur lors de l'adhésion à la conversation: ${error.message}`)
-      return { success: false, error: error.message }
-    }
-  }
+  // @SubscribeMessage('joinConversation')
+  // async joinConversation(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() data: { conversationId: string },
+  // ) {
+  //   try {
+  //     const userId = client.data.userId
+  //     await this.conversationsService.joinConversation(
+  //       data.conversationId,
+  //       new Types.ObjectId(userId),
+  //     )
+  //     client.join(`conversation-${data.conversationId}`)
+  //     return { success: true }
+  //   } catch (error) {
+  //     this.logger.error(`Erreur lors de l'adhésion à la conversation: ${error.message}`)
+  //     return { success: false, error: error.message }
+  //   }
+  // }
 
   @SubscribeMessage('sendMessage')
   async sendMessage(

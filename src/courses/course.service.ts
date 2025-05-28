@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { Course } from './schemas/course.schema'
-import { CourseDocument } from '@/types/mongoose'
+import { CourseDocument } from '@/types/mongoose.d'
 
 @Injectable()
 export class CoursesService {

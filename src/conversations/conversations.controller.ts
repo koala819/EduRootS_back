@@ -19,9 +19,9 @@ export class ConversationsController {
 
   @Post()
   async create(@Body() body: {
-    type: 'private' | 'group'
-    members: string[]
-    name?: string
+    // type?: 'private' | 'group'
+    // members?: string[]
+    // name?: string
     studentId: string
   }) {
     console.log('Contenu reçu du front:', body)
@@ -31,7 +31,6 @@ export class ConversationsController {
     }
 
     const studentId = body.studentId
-    // const bureauId = process.env.BUREAU_USER_ID || ''
 
     // 1. Récupérer les profs associés à l'élève
     const profIds = await this.coursesService.getTeachersForStudent(studentId)
