@@ -11,8 +11,8 @@ export class LogDbService implements OnModuleInit {
     if (this.connection.readyState === 1) {
       console.log('✅ Déjà connecté à la base MongoDB :', this.connection.name)
       console.log('📦 Collections:', Object.keys(this.connection.collections))
-      console.log('🔍 Nom base Mongoose :', this.connection.name)
-      console.log('🔗 URI utilisé :', process.env.MONGODB_URI)
+      // console.log('🔍 Nom base Mongoose :', this.connection.name)
+      // console.log('🔗 URI utilisé :', process.env.MONGODB_URI)
 
     }
 
