@@ -50,14 +50,13 @@ export class ConversationsService {
   async ensureDefaultGroupsForParent(
     parentId: string | Types.ObjectId,
     profId: string | Types.ObjectId,
-    bureauId: string,
   ) {
     //1. Parent <-> Prof
     await this.findOrCreateConversation({
       type: 'private',
       members: [parentId, profId],
     })
-    console.log('bureauId :', bureauId)
+    // console.log('bureauId :', process.env.BUREAU_USER_ID!)
     //2. Parent <-> Bureau
     // await this.findOrCreateConversation({
     //   type: 'private',
