@@ -55,7 +55,7 @@ export class ConversationsService {
     await this.findOrCreateConversation({
       type: 'private',
       members: [parentId, profId],
-      name: 'Parent et Prof',
+      name: 'parent-prof',
     })
 
     if (!process.env.BUREAU_USER_ID) {
@@ -66,13 +66,13 @@ export class ConversationsService {
     await this.findOrCreateConversation({
       type: 'private',
       members: [parentId, process.env.BUREAU_USER_ID],
-      name: 'Parent et Bureau',
+      name: 'parent-bureau',
     })
     //3. Parent <-> Prof <-> Bureau
     await this.findOrCreateConversation({
       type: 'group',
       members: [parentId, profId, process.env.BUREAU_USER_ID],
-      name: 'Parent, Prof et Bureau',
+      name: 'parent-prof-bureau',
     })
   }
 
