@@ -3,6 +3,10 @@ import {
   Post,
   Body,
   UseGuards,
+  Param,
+  Get,
+  ForbiddenException,
+  Query,
 } from '@nestjs/common'
 import { ConversationsService } from './conversations.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
@@ -17,6 +21,19 @@ export class ConversationsController {
     private readonly conversationsService: ConversationsService,
     private readonly coursesService: CoursesService,
   ) {}
+
+  @Get(':id/messages')
+  async getMessages(
+    @Param('id') conversationId: string,
+    @Query('childId') childId: string,
+  ) {
+    const conversation = await this.conversationsService.findById(conversationId)
+
+    if (!conversation || !conversation.members.includes(new Types.ObjectId(childId))) {
+      throw new ForbiddenException('Accès interdit à cette conversation')
+    }
+    return this.conversationsService.getChatMessages(conversationId)
+  }
 
   @Post()
   async create(@Body() body: {

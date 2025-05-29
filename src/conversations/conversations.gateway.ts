@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io'
 import { ConversationsService } from './conversations.service'
 import { Types } from 'mongoose'
 import { Logger } from '@nestjs/common'
+import * as jwt from 'jsonwebtoken'
 
 @WebSocketGateway({
   cors: {
@@ -34,9 +35,18 @@ export class ConversationsGateway implements OnGatewayConnection, OnGatewayDisco
         return
       }
 
-      // Pour le moment, on accepte simplement l'ID utilisateur envoyé
-      // À terme, il faudra vérifier le token NextAuth
-      const userId = client.handshake.auth.userId
+      //Décoder le token pour récupérer l'id utilisateur
+      let payload: any
+      try {
+        payload = jwt.verify(token, process.env.MY_CUSTOM_JWT_SECRET)
+      } catch (e) {
+        this.logger.error('Token invalide, déconnexion du client', e)
+        client.disconnect()
+        return
+      }
+
+
+      const userId = payload.id
       if (!userId) {
         this.logger.error('UserId manquant, déconnexion du client')
         client.disconnect()
@@ -53,7 +63,11 @@ export class ConversationsGateway implements OnGatewayConnection, OnGatewayDisco
 
       // Utiliser le fait que les conversations sont des objets MongoDB avec un _id
       for (const conversation of conversations) {
-        // Utilisation du document mongoose directement
+        // Log avant de rejoindre la room
+        this.logger.log(
+          `Ajout du client ${client.id} à la
+           room conversation-${conversation.id} (user: ${userId})`,
+        )
         // .id est une méthode getter qui convertit _id en string
         client.join(`conversation-${conversation.id}`)
       }
@@ -69,36 +83,19 @@ export class ConversationsGateway implements OnGatewayConnection, OnGatewayDisco
     this.logger.log(`Client déconnecté: ${client.id}`)
   }
 
-  // @SubscribeMessage('joinConversation')
-  // async joinConversation(
-  //   @ConnectedSocket() client: Socket,
-  //   @MessageBody() data: { conversationId: string },
-  // ) {
-  //   try {
-  //     const userId = client.data.userId
-  //     await this.conversationsService.joinConversation(
-  //       data.conversationId,
-  //       new Types.ObjectId(userId),
-  //     )
-  //     client.join(`conversation-${data.conversationId}`)
-  //     return { success: true }
-  //   } catch (error) {
-  //     this.logger.error(`Erreur lors de l'adhésion à la conversation: ${error.message}`)
-  //     return { success: false, error: error.message }
-  //   }
-  // }
-
   @SubscribeMessage('sendMessage')
   async sendMessage(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { conversationId: string; content: string },
+    @MessageBody() data: { conversationId: string; content: string; authorId: string },
   ) {
     try {
-      const userId = client.data.userId
       const message = await this.conversationsService.createChatMessage(
         data.conversationId,
-        userId,
+        data.authorId,
         data.content,
+      )
+      this.logger.log(
+        `Envoi de newMessage à conversation-${data.conversationId}
+         (user: ${data.authorId}) : ${JSON.stringify(message)}`,
       )
 
       // Envoyer le message à tous les membres de la conversation

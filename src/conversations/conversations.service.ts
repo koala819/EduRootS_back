@@ -93,12 +93,16 @@ export class ConversationsService {
       name,
     }).exec()
     if (existingConversation) {
-      console.log('conversation existante trouvée')
+      // console.log('conversation existante trouvée')
       return existingConversation
     }
 
     //si pas de conversation existante, en créer une
-    console.log('pas de conversation existante, en créer une')
+    // console.log('pas de conversation existante, en créer une')
     return this.create(type, membersObjIds, name)
+  }
+
+  async findById(conversationId: string | Types.ObjectId) {
+    return this.conversationModel.findById(toObjectId(conversationId)).exec()
   }
 }
