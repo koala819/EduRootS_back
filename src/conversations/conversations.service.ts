@@ -55,19 +55,25 @@ export class ConversationsService {
     await this.findOrCreateConversation({
       type: 'private',
       members: [parentId, profId],
+      name: 'Parent et Prof',
     })
-    // console.log('bureauId :', process.env.BUREAU_USER_ID!)
-    //2. Parent <-> Bureau
-    // await this.findOrCreateConversation({
-    //   type: 'private',
-    //   members: [parentId, bureauId],
-    // })
+
+    if (!process.env.BUREAU_USER_ID) {
+      throw new Error('BUREAU_USER_ID is not defined')
+    }
+
+    // 2. Parent <-> Bureau
+    await this.findOrCreateConversation({
+      type: 'private',
+      members: [parentId, process.env.BUREAU_USER_ID],
+      name: 'Parent et Bureau',
+    })
     //3. Parent <-> Prof <-> Bureau
-    // await this.findOrCreateConversation({
-    //   type: 'group',
-    //   members: [parentId, profId, bureauId],
-    //   name: 'Parent, Prof et Bureau',
-    // })
+    await this.findOrCreateConversation({
+      type: 'group',
+      members: [parentId, profId, process.env.BUREAU_USER_ID],
+      name: 'Parent, Prof et Bureau',
+    })
   }
 
   async findOrCreateConversation({
@@ -77,14 +83,14 @@ export class ConversationsService {
   }: {
     type: 'private' | 'group',
     members: (string | Types.ObjectId)[],
-    name?: string
+    name: string
   }) {
     const membersObjIds = members.map(toObjectId)
     //chercher une conversation existante avec ces membres et ce type
     const existingConversation = await this.conversationModel.findOne({
       type,
       members: { $all: membersObjIds, $size: membersObjIds.length },
-      ...(name ? { name } : {}),
+      name,
     }).exec()
     if (existingConversation) {
       console.log('conversation existante trouvée')
@@ -93,6 +99,6 @@ export class ConversationsService {
 
     //si pas de conversation existante, en créer une
     console.log('pas de conversation existante, en créer une')
-    return this.create(type, membersObjIds, type === 'private' ? undefined : name)
+    return this.create(type, membersObjIds, name)
   }
 }
