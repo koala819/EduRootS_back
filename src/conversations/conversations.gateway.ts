@@ -15,7 +15,10 @@ import * as jwt from 'jsonwebtoken'
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL,
+    // Local
+    origin: 'http://localhost:3000',
+    // Vercel
+    // origin: 'https://eduroots-back.vercel.app',
     credentials: true,
   },
 })
