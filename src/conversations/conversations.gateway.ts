@@ -68,7 +68,7 @@ export class ConversationsGateway implements OnGatewayConnection, OnGatewayDisco
           `Ajout du client ${client.id} à la
            room conversation-${conversation.id} (user: ${userId})`,
         )
-        // .id est une méthode getter qui convertit _id en string
+        //ajoute client à la room
         client.join(`conversation-${conversation.id}`)
       }
 
@@ -95,8 +95,18 @@ export class ConversationsGateway implements OnGatewayConnection, OnGatewayDisco
       )
       this.logger.log(
         `Envoi de newMessage à conversation-${data.conversationId}
-         (user: ${data.authorId}) : ${JSON.stringify(message)}`,
+       (user: ${data.authorId}) : ${JSON.stringify(message)}`,
       )
+      // TEST : broadcast à tous les clients, pas seulement à la room
+      // this.server.emit('newMessage', {
+      //   conversationId: data.conversationId,
+      //   message,
+      // })
+
+      // this.logger.log(
+      //   `Envoi de newMessage à conversation-${data.conversationId}
+      //    (user: ${data.authorId}) : ${JSON.stringify(message)}`,
+      // )
 
       // Envoyer le message à tous les membres de la conversation
       this.server.to(`conversation-${data.conversationId}`).emit('newMessage', {
@@ -109,6 +119,32 @@ export class ConversationsGateway implements OnGatewayConnection, OnGatewayDisco
       this.logger.error(`Erreur lors de l'envoi du message: ${error.message}`)
       return { success: false, error: error.message }
     }
+  }
+
+  @SubscribeMessage('amIInRoom')
+  amIInRoom(@ConnectedSocket() client: Socket, @MessageBody() data: { conversationId: string }) {
+    const room = `conversation-${data.conversationId}`
+    const isInRoom = this.server.sockets.adapter.rooms.get(room)?.has(client.id) ?? false
+    client.emit('amIInRoomResult', { room, isInRoom })
+  }
+
+  @SubscribeMessage('joinChildRooms')
+  async joinChildRooms(
+  @ConnectedSocket() client: Socket,
+  @MessageBody() data: { childId: string },
+  ) {
+    // Récupère toutes les conversations de l’enfant
+    const conversations = await this.conversationsService.findAllForUser(
+      new Types.ObjectId(data.childId),
+    )
+    for (const conversation of conversations) {
+      client.join(`conversation-${conversation.id}`)
+      this.logger.log(
+        `Ajout du client ${client.id} à la room conversation-${conversation.id}
+         (child: ${data.childId}) via joinChildRooms`,
+      )
+    }
+    client.emit('joinedChildRooms', { childId: data.childId })
   }
 
   @SubscribeMessage('typing')
