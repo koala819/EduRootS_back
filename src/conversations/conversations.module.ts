@@ -5,7 +5,7 @@ import { ConversationsService } from './conversations.service'
 import { ConversationsController } from './conversations.controller'
 import { ChatMessage, ChatMessageSchema } from './schemas/chatmessage.schema'
 import { ConversationsGateway } from './conversations.gateway'
-import { CoursesModule } from '@/courses/course.module'
+import { CoursesModule } from '../courses/course.module'
 
 @Module({
   imports: [CoursesModule,

@@ -10,8 +10,7 @@ import {
 } from '@nestjs/common'
 import { ConversationsService } from './conversations.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
-// import { Types } from 'mongoose'
-import { CoursesService } from '@/courses/course.service'
+import { CoursesService } from '../courses/course.service'
 import { Types } from 'mongoose'
 
 @UseGuards(JwtAuthGuard)
