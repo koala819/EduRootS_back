@@ -8,12 +8,13 @@ async function bootstrap() {
 
   // Configuration CORS
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL,
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   })
 
-  const port = process.env.PORT || 3001
-  await app.listen(port)
-  logger.log(`Application démarrée sur le port: ${port}`)
+  await app.listen(3001)
+  logger.log('Application démarrée sur le port: 3001')
 }
 bootstrap()
