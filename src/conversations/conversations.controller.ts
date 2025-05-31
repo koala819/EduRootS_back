@@ -24,11 +24,26 @@ export class ConversationsController {
   @Get(':id/messages')
   async getMessages(
     @Param('id') conversationId: string,
-    @Query('childId') childId: string,
+    @Query('author') author: string,
   ) {
+    // console.log('Tentative d\'accès aux messages:', { conversationId, author })
     const conversation = await this.conversationsService.findById(conversationId)
+    // console.log('Conversation trouvée:', conversation)
 
-    if (!conversation || !conversation.members.includes(new Types.ObjectId(childId))) {
+    if (!conversation) {
+      // console.log('Conversation non trouvée')
+      throw new ForbiddenException('Conversation non trouvée')
+    }
+
+    const childObjectId = new Types.ObjectId(author)
+    const isMember = conversation.members.some((member) => member.equals(childObjectId))
+    // console.log('Vérification des membres:', {
+    //   members: conversation.members,
+    //   author: childObjectId,
+    //   isMember,
+    // })
+
+    if (!isMember) {
       throw new ForbiddenException('Accès interdit à cette conversation')
     }
     return this.conversationsService.getChatMessages(conversationId)
