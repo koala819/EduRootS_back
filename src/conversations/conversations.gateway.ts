@@ -15,12 +15,7 @@ import * as jwt from 'jsonwebtoken'
 
 @WebSocketGateway({
   cors: {
-    // Local
-    // origin: 'http://localhost:3000',
-    // Vercel
-    // origin: 'https://eduroots-git-newmessagerie-xavier819.vercel.app',
-    origin: process.env.NODE_ENV === 'production'
-      ? 'https://eduroots-git-newmessagerie-xavier819.vercel.app' : 'http://localhost:3000',
+    origin: '*',
     credentials: true,
   },
 })
@@ -138,7 +133,7 @@ export class ConversationsGateway implements OnGatewayConnection, OnGatewayDisco
   @ConnectedSocket() client: Socket,
   @MessageBody() data: { childId: string },
   ) {
-    // Récupère toutes les conversations de l’enfant
+    // Récupère toutes les conversations de l'enfant
     const conversations = await this.conversationsService.findAllForUser(
       new Types.ObjectId(data.childId),
     )
